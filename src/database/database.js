@@ -7,7 +7,7 @@ const connection = new Pool({
     password: '123456',
     host: 'localhost',
     port: 5432,
-    database: 'store_db'
+    database: 'nmadatabase'
 })
 
 export default connection;
