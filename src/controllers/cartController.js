@@ -8,7 +8,7 @@ async function getCartProducts (req,res) {
     try {
         const validUser = await connection.query(`SELECT * FROM sessions
                                                   WHERE token = $1`, [token])
-        if(!validUser) return res.sendStatus(401)
+        if(!validUser.rows.length) return res.sendStatus(401)
     
         const productsSelected = await connection.query(`SElECT * FROM cart
                                                          WHERE userid = $1`, 
