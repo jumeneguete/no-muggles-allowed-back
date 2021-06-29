@@ -23,7 +23,6 @@ async function getUserData (req,res) {
 }
 
 async function postUserAdress (req,res) {
-
     const {titleAddress, address, cpf} = req.body
     const authorization = req.headers['authorization']
     const token = authorization?.replace('Bearer ', '')
