@@ -1,10 +1,16 @@
 import connection from "../database/database.js";
+import signInSchema from "../schemas/signInSchema.js";
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
 async function postSingIn(req,res){
+    const { email, password } = req.body;
+
+    const { error } = signInSchema.validate({email: email, password: password});
+    
+    if (error !== undefined) return res.sendStatus(400);
+
     try {
-        const { email, password } = req.body;
     
         const result = await connection.query(`
             SELECT * FROM users
