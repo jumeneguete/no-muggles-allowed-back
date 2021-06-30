@@ -1,12 +1,13 @@
 import express from 'express';
 import cors from 'cors';
-// import bcrypt from 'bcrypt';
-// import { v4 as uuid } from 'uuid';
-// import connection from './database/database.js';
-// import joi from 'joi';
+import postSingUp from './controllers/singUpContrroller.js';
+import postSingIn from './controllers/singInController.js';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+app.post('/sign-up', postSingUp);
+app.post('/sign-in', postSingIn);
 
 export default app;
