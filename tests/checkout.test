@@ -1,4 +1,4 @@
-import { afterAll, beforeEach } from '@jest/globals'
+/*import { afterAll, beforeEach } from '@jest/globals'
 import supertest from 'supertest';
 import app from '../src/app.js';
 import connection from '../src/database/database.js';
@@ -64,4 +64,4 @@ describe('POST /useraddress', () => {
 
         expect(status).toEqual(401)
     })
-}) 
+})*/

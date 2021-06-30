@@ -35,7 +35,8 @@ async function deleteItem (req,res) {
         if(!validUser.rows.length) return res.sendStatus(401)
 
         await connection.query(`DELETE FROM cart WHERE sku = $1`, [itemSku])
-        const newCart = await connection.query(`SELECT * FROM cart WHERE userId = $1`, [validUser.rows[0].userId])
+        const newCart = await connection.query(`SELECT * FROM cart WHERE userId = $1`, 
+                                                [validUser.rows[0].userId])
 
         res.send(newCart).status(200)
     }
