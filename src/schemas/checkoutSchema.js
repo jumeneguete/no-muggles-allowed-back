@@ -6,4 +6,4 @@ const adressSchema = joi.object({
     cpf: joi.string().pattern(/^[0-9]{3}[0-9]{3}[0-9]{3}[0-9]{2}$/, "CPF inválido").required()
 })
 
-export {adressSchema}
+export { adressSchema }

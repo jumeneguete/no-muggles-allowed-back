@@ -1,7 +1,7 @@
 import { afterAll, beforeEach } from '@jest/globals'
 import supertest from 'supertest';
 import app from '../src/app';
-import connection from '../src/database/database';
+import connection from '../src/database/database.js';
 
 beforeEach(async () => {
     await connection.query('DELETE FROM sessions WHERE token = $1', ['test'])

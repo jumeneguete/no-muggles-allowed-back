@@ -1,5 +1,5 @@
 import connection from "../database/database.js"
-import adressSchema from "../schemas/checkoutSchema"
+import { adressSchema } from "../schemas/checkoutSchema.js"
 
 async function getUserData (req,res) {
     const authorization = req.headers['authorization']
