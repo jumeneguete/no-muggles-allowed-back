@@ -29,7 +29,7 @@ describe('POST /sign-up', () => {
         expect(result.status).toEqual(201)
     });
 
-    it('return status 422 for invalid params', async () => {
+    it('return status 400 for invalid params', async () => {
         const body = {
             name: "teste", 
             email: "teste@teste.com", 
@@ -57,7 +57,7 @@ describe('POST /sign-up', () => {
 })
 
 describe('POST /sign-in', () => {
-    it('return status 201 for valid params', async () => {
+    it('return status 200 for valid params', async () => {
         const body = {
             email: "teste@teste.com", 
             password:"123456", 
@@ -68,7 +68,7 @@ describe('POST /sign-in', () => {
         expect(result.status).toEqual(200)
     });
 
-    it('return status 401 for invalid params', async () => {
+    it('return status 400 for invalid params', async () => {
         const body = {
             email: "teste", 
             password:"123456", 
