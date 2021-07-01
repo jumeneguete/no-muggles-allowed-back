@@ -7,7 +7,7 @@ const adressSchema = joi.object({
 })
 
 const cardSchema = joi.object({
-    cardNumber: joi.number().integer().positive().min(999999999999999).required(),
+    cardNumber: joi.number().integer().positive().min(999999999999999).max(9999999999999990).required(),
     cardName: joi.string().required(),
     validity: joi.date().required()
 })

@@ -10,12 +10,12 @@ async function getCartProducts (req,res) {
                                                   WHERE token = $1`, [token])
         if(!validUser.rows.length) return res.sendStatus(401)
     
-        const productsSelected = await connection.query(`SELECT cart.*, products.productname, products.price, 
-                                                            products.productimage, products.stock
+        const productsSelected = await connection.query(`SELECT cart.*, products."productName", products.price, 
+                                                            products."productImage", products.stock
                                                             FROM cart JOIN products 
-                                                            ON products.sku = cart.sku
-                                                            WHERE cart.userid = $1`, 
-                                                         [validUser.rows[0].userid])
+                                                            ON products."SKU" = cart."SKU"
+                                                            WHERE cart."userId" = $1`, 
+                                                         [validUser.rows[0].userId])
         return res.send(productsSelected.rows).status(200)
     }
     catch (e) {
@@ -34,8 +34,8 @@ async function deleteItem (req,res) {
                                                   WHERE token = $1`, [token])
         if(!validUser.rows.length) return res.sendStatus(401)
 
-        await connection.query(`DELETE FROM cart WHERE sku = $1`, [itemSku])
-        const newCart = await connection.query(`SELECT * FROM cart WHERE userId = $1`, 
+        await connection.query(`DELETE FROM cart WHERE "SKU" = $1`, [itemSku])
+        const newCart = await connection.query(`SELECT * FROM cart WHERE "userId" = $1`, 
                                                 [validUser.rows[0].userId])
 
         res.send(newCart).status(200)
