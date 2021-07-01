@@ -1,5 +1,5 @@
 import connection from "../database/database.js"
-import { adressSchema } from "../schemas/checkoutSchema.js"
+import { adressSchema, cardSchema } from "../schemas/checkoutSchema.js"
 
 async function getUserData (req,res) {
     const authorization = req.headers['authorization']
@@ -48,4 +48,30 @@ async function postUserAddress (req,res) {
     }
 }
 
-export {getUserData, postUserAddress};
+async function postCard (req,res) {
+    const {cardNumber, cardName, validity} = req.body
+    const authorization = req.headers['authorization']
+    const token = authorization?.replace('Bearer ', '')
+
+    try {
+        const validUser = await connection.query(`SELECT * FROM sessions
+                                                  WHERE token = $1`, [token])
+        if(!validUser.rows.length) return res.sendStatus(401)
+        const userId = validUser.rows[0].userId
+
+        const { error } = cardSchema.validate(req.body);
+        if(error) return res.status(422).send({ error: error.details[0].message })
+        
+        await connection.query(`INSERT INTO payment ("userId", "cardNumber", "cardName", "validity")
+                                VALUES ($1, $2, $3, $4)`, 
+                                [userId, cardNumber, cardName, validity])
+        res.sendStatus(201)
+    }
+
+    catch (e) {
+        console.log(e)
+        return res.sendStatus(500)
+    }
+}
+
+export {getUserData, postUserAddress, postCard};

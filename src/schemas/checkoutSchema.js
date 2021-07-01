@@ -6,4 +6,10 @@ const adressSchema = joi.object({
     CPF: joi.string().pattern(/^[0-9]{3}[0-9]{3}[0-9]{3}[0-9]{2}$/, "CPF inválido").required()
 })
 
-export { adressSchema }
+const cardSchema = joi.object({
+    cardNumber: joi.number().integer().positive().min(999999999999999).required(),
+    cardName: joi.string().required(),
+    validity: joi.date().required()
+})
+
+export { adressSchema, cardSchema }
