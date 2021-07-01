@@ -1,6 +1,7 @@
 import supertest from 'supertest';
 import app from '../src/app';
 import connection from "../src/database/database.js"
+import { login } from "../tests/util"
 
 async function cleanDatabase () {
     await connection.query('DELETE FROM users');
@@ -78,4 +79,13 @@ describe('POST /sign-in', () => {
 
         expect(result.status).toEqual(400)
     });
+})
+
+describe('POST /sign-out', () => {
+    it('return status 200', async () => {
+        const token = await login();
+        const result = await supertest(app).post('/sign-out').set('Authorization', `Bearer ${token}`);
+        expect(result.status).toEqual(200)
+    })
+
 })
