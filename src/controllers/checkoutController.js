@@ -22,8 +22,8 @@ async function getUserData (req,res) {
     }
 }
 
-async function postUserAdress (req,res) {
-    const {titleAddress, address, cpf} = req.body
+async function postUserAddress (req,res) {
+    const {titleAddress, address, CPF} = req.body
     const authorization = req.headers['authorization']
     const token = authorization?.replace('Bearer ', '')
 
@@ -36,8 +36,10 @@ async function postUserAdress (req,res) {
         const { error } = adressSchema.validate(req.body);
         if(error) return res.status(422).send({ error: error.details[0].message })
         
-        await connection.query('INSERT INTO userdata (userid, titleaddress, address, cpf)', 
-                                [userId, titleAddress, address, cpf])
+        await connection.query(`INSERT INTO "userData" ("userId", "titleAddress", address, "CPF")
+                                VALUES ($1, $2, $3, $4)`, 
+                                [userId, titleAddress, address, CPF])
+        res.sendStatus(201)
     }
 
     catch (e) {
@@ -46,4 +48,4 @@ async function postUserAdress (req,res) {
     }
 }
 
-export {getUserData, postUserAdress};
+export {getUserData, postUserAddress};
