@@ -12,12 +12,8 @@ async function postCart(req, res) {
 
     try {
         const result = await connection.query(`
-        SELECT sessions."userId"
-        FROM sessions 
-        JOIN users
-        ON users.id = sessions."userId"
-        WHERE sessions.token = $1
-        `, [token]);
+        SELECT * FROM sessions WHERE token = $1`, 
+        [token]);
 
         const userId = result.rows[0].userId;
 
