@@ -11,6 +11,9 @@ export async function login () {
     
     await supertest(app).post("/sign-up").send(body);
 
+    await connection.query(`INSERT INTO sessions ("userId", token) 
+                            VALUES ($1, $2)`, [100, 'test'])
+
     const user = await supertest(app).post("/sign-in").send({email: body.email, password: body.password })
     
     return user.body.token;

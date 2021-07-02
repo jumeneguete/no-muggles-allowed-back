@@ -1,7 +1,6 @@
 import supertest from 'supertest';
 import app from '../src/app';
 import connection from "../src/database/database.js"
-import { login } from "../tests/util"
 
 async function cleanDatabase () {
     await connection.query('DELETE FROM users');
@@ -94,8 +93,11 @@ describe('POST /sign-in', () => {
 
 describe('POST /sign-out', () => {
     it('return status 200', async () => {
-        const token = await login();
-        const result = await supertest(app).post('/sign-out').set('Authorization', `Bearer ${token}`);
+        
+        await connection.query(`INSERT INTO sessions ("userId", token) 
+                                VALUES ($1, $2)`, [100, 'test'])
+
+        const result = await supertest(app).post('/sign-out').set('Authorization', 'Bearer test');
         expect(result.status).toEqual(200)
     })
 
