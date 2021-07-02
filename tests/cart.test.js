@@ -9,7 +9,7 @@ beforeEach(async () => {
 
 afterAll(async () => {
     await connection.query('DELETE FROM sessions WHERE token = $1', ['carttest'])
-    connection.end();
+    await connection.end();
 })
 
 describe("GET /cart", () => {

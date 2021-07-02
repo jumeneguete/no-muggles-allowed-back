@@ -1,7 +1,7 @@
 import connection from "../database/database.js"
-import { adressSchema, cardSchema } from "../schemas/checkoutSchema.js"
+import { addressSchema, cardSchema } from "../schemas/checkoutSchema.js"
 
-async function getUserData (req,res) {
+async function getUsers (req,res) {
     const authorization = req.headers['authorization']
     const token = authorization?.replace('Bearer ', '')
 
@@ -24,22 +24,34 @@ async function getUserData (req,res) {
 
 async function postUserAddress (req,res) {
     const {titleAddress, address, CPF} = req.body
+    console.log(req.body)
     const authorization = req.headers['authorization']
+    console.log(authorization)
     const token = authorization?.replace('Bearer ', '')
 
     try {
+        console.log('console query 1')
         const validUser = await connection.query(`SELECT * FROM sessions
                                                   WHERE token = $1`, [token])
         if(!validUser.rows.length) return res.sendStatus(401)
         const userId = validUser.rows[0].userId
 
-        const { error } = adressSchema.validate(req.body);
+        const { error } = addressSchema.validate(req.body);
         if(error) return res.status(422).send({ error: error.details[0].message })
+
+        console.log('console query 2')
+        const addressIsRegistered = await connection.query(`SELECT * FROM "userData" 
+                                                            WHERE "titleAddress" = $1
+                                                            AND "userId"=$2`,
+                                                            [titleAddress, validUser.rows[0].userId])
+        console.log(addressIsRegistered.rows)
+        if(addressIsRegistered.rows.length) return res.sendStatus(409)
         
+        console.log('console query 3')
         await connection.query(`INSERT INTO "userData" ("userId", "titleAddress", address, "CPF")
                                 VALUES ($1, $2, $3, $4)`, 
                                 [userId, titleAddress, address, CPF])
-        res.sendStatus(201)
+        return res.sendStatus(201)
     }
 
     catch (e) {
@@ -74,4 +86,23 @@ async function postCard (req,res) {
     }
 }
 
-export {getUserData, postUserAddress, postCard};
+async function getAddress (req,res) {
+    const authorization = req.headers['authorization']
+    const token = authorization?.replace('Bearer ', '')
+
+    try {
+        const validUser = await connection.query(`SELECT * FROM sessions
+                                                  WHERE token = $1`, [token])
+        if(!validUser.rows.length) return res.sendStatus(401)
+        
+        const address = await connection.query(`SELECT * FROM "userData"
+                                                WHERE "userId" = $1`, [validUser.rows[0].userId])
+
+        res.send(address.rows)
+    }
+    catch(e){
+        console.log(e)
+    }
+}
+
+export {getUsers, postUserAddress, postCard, getAddress};

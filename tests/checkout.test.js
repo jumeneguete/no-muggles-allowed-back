@@ -3,25 +3,21 @@ import supertest from 'supertest';
 import app from '../src/app.js';
 import connection from '../src/database/database.js';
 
-async function cleanDatabase() {
-    await connection.query('DELETE FROM "userData"');
-    await connection.query('DELETE FROM payment');
-    await connection.query('DELETE FROM sessions');
-}
-
 beforeEach(async () => {
-    await connection.query('DELETE FROM sessions WHERE token = $1', ['test'])
+    await connection.query('DELETE FROM sessions')
+    await connection.query('DELETE FROM "userData"')
+    await connection.query('DELETE FROM payment')
 })
 
 afterAll(async () => {
-    await connection.query('DELETE FROM sessions WHERE token = $1', ['test'])
-    connection.end();
+    await connection.query('DELETE FROM sessions')
+    await connection.end();
 })
 
 describe('GET /checkout', () => {
-    beforeEach (async() => {
-        await connection.query(`INSERT INTO sessions ("userId", token) 
-                                VALUES ($1, $2)`, [100, 'test'])
+    beforeEach (async() => { 
+       await connection.query(`INSERT INTO sessions ("userId", token) 
+                               VALUES ($1, $2)`, [100, 'test'])
     })
 
     it('returns 200 for valid params', async() => {
@@ -38,11 +34,12 @@ describe('GET /checkout', () => {
 }) 
 
 describe('POST /useraddress', () => {
-    beforeEach (async() => {
+
+    beforeEach (async() => { 
         await connection.query(`INSERT INTO sessions ("userId", token) 
                                 VALUES ($1, $2)`, [100, 'test'])
-    })
-
+     })
+    
     it('returns 201 for valid params', async() => {
 
         const body = {
@@ -54,9 +51,6 @@ describe('POST /useraddress', () => {
         const result = await supertest(app) .post("/useraddress")
                                             .send(body)
                                             .set('Authorization', 'Bearer test')
-
-        await connection.query(`DELETE FROM "userData" WHERE "titleAddress"=$1`, ["Teste"])
-
         expect(result.status).toEqual(201)
     })
 
@@ -65,8 +59,28 @@ describe('POST /useraddress', () => {
         expect(result.status).toEqual(401)
     })
 
-    it('returns 422 for invalid title address', async() => {
+    it('returns 409 for duplicate address', async() => {
+        await connection.query(`INSERT INTO sessions ("userId", token) 
+                                VALUES ($1, $2)`, [100, "test"])
 
+        const body = {
+            "titleAddress": "Teste",
+            "address": "Rua Teste, n° 000, casa 1",
+            "CPF": "15024230736"
+        }
+        
+        const result = await supertest(app) .post("/useraddress")
+                                            .send(body)
+                                            .set('Authorization', 'Bearer test')
+        expect(result.status).toEqual(201)
+
+        const secondTry = await supertest(app)  .post("/useraddress")
+                                                .send(body)
+                                                .set('Authorization', 'Bearer test')
+        expect(secondTry.status).toEqual(409)
+    })
+
+    it('returns 422 for invalid title address', async() => {
         const body = {
             "titleAddress": 1234,
             "address": "Rua Teste, n° 000, casa 1",
@@ -96,7 +110,7 @@ describe('POST /useraddress', () => {
     })
 
     it('returns 422 for invalid address', async() => {
-
+ 
         const body = {
             "titleAddress": "Teste",
             "address": 1234,
@@ -111,7 +125,7 @@ describe('POST /useraddress', () => {
     })
 
     it('returns 422 for empty address', async() => {
-
+   
         const body = {
             "titleAddress": "Teste",
             "address": "",

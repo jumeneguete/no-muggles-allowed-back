@@ -11,7 +11,7 @@ beforeAll(cleanDatabase);
 
 afterAll(async () => {
     await cleanDatabase();
-    connection.end();
+    await connection.end();
 });
 
 describe('POST /sign-up', () => {

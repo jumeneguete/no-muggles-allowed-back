@@ -1,6 +1,6 @@
 import joi from "joi"
 
-const adressSchema = joi.object({
+const addressSchema = joi.object({
     titleAddress: joi.string().required(),
     address: joi.string().required(),
     CPF: joi.string().pattern(/^[0-9]{3}[0-9]{3}[0-9]{3}[0-9]{2}$/, "CPF inválido").required()
@@ -12,4 +12,4 @@ const cardSchema = joi.object({
     validity: joi.date().required()
 })
 
-export { adressSchema, cardSchema }
+export { addressSchema, cardSchema }
