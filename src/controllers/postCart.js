@@ -6,7 +6,7 @@ async function postCart(req, res) {
     const token = authorization?.replace("Bearer ", "");
     const { sku, quantity } = req.body;
 
-    const validBody = insertCartSchema.validate({ sku: parseInt(sku), quantity: parseInt(quantity)});
+    const validBody = insertCartSchema.validate({ sku: parseInt(sku), quantity: parseInt(quantity), token});
 
     if(validBody.error) return res.sendStatus(400);
 
@@ -27,8 +27,7 @@ async function postCart(req, res) {
 
         await connection.query(`INSERT INTO cart ("userId", sku, quantity) VALUES ($1, $2, $3)`, [userId, sku, quantity]);
        
-
-        res.sendStatus(200);
+        return res.sendStatus(200);
 
     } catch (err) {
         console.log(err);

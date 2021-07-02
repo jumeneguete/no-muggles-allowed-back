@@ -12,6 +12,5 @@ export async function login () {
     await supertest(app).post("/sign-up").send(body);
 
     const user = await supertest(app).post("/sign-in").send({email: body.email, password: body.password })
-    
     return user.body.token;
 }

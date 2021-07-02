@@ -26,4 +26,11 @@ describe("GET /products", () => {
         const result = await supertest(app).get("/products").query({product: ''});
         expect(result.status).toEqual(200);
     });
+
+    it("returns status 200 for products searched via empty query 'product'", async () => {
+
+        const product = await connection.query(`INSERT INTO products ("productName", description, price, stock, sku, "productImage")VALUES ('productname', 'testdescription', 7000, 4, 0090, 'testimage') RETURNING *`);
+        const result = await supertest(app).get(`/products/${product.rows[0].id}`);
+        expect(result.status).toEqual(200);
+    });
 });
