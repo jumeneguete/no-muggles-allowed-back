@@ -79,6 +79,17 @@ describe('POST /sign-in', () => {
 
         expect(result.status).toEqual(400)
     });
+    
+    it('return status 400 for invalid params', async () => {
+        const body = {
+            email: "teste", 
+            password:"123456", 
+        }
+
+        const result = await supertest(app).post('/sign-in').send(body);
+
+        expect(result.status).toEqual(400)
+    });
 })
 
 describe('POST /sign-out', () => {

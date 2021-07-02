@@ -24,13 +24,11 @@ async function getUsers (req,res) {
 
 async function postUserAddress (req,res) {
     const {titleAddress, address, CPF} = req.body
-    console.log(req.body)
     const authorization = req.headers['authorization']
     console.log(authorization)
     const token = authorization?.replace('Bearer ', '')
 
     try {
-        console.log('console query 1')
         const validUser = await connection.query(`SELECT * FROM sessions
                                                   WHERE token = $1`, [token])
         if(!validUser.rows.length) return res.sendStatus(401)
@@ -39,15 +37,12 @@ async function postUserAddress (req,res) {
         const { error } = addressSchema.validate(req.body);
         if(error) return res.status(422).send({ error: error.details[0].message })
 
-        console.log('console query 2')
         const addressIsRegistered = await connection.query(`SELECT * FROM "userData" 
                                                             WHERE "titleAddress" = $1
                                                             AND "userId"=$2`,
                                                             [titleAddress, validUser.rows[0].userId])
-        console.log(addressIsRegistered.rows)
         if(addressIsRegistered.rows.length) return res.sendStatus(409)
         
-        console.log('console query 3')
         await connection.query(`INSERT INTO "userData" ("userId", "titleAddress", address, "CPF")
                                 VALUES ($1, $2, $3, $4)`, 
                                 [userId, titleAddress, address, CPF])
@@ -105,4 +100,40 @@ async function getAddress (req,res) {
     }
 }
 
-export {getUsers, postUserAddress, postCard, getAddress};
+async function finishOrder (req,res) {
+    const {payment} = req.body
+    const authorization = req.headers['authorization']
+    const token = authorization?.replace('Bearer ', '')
+
+    try {
+        const validUser = await connection.query(`SELECT * FROM sessions
+                                                  WHERE token = $1`, [token])
+        if(!validUser.rows.length) return res.sendStatus(401)
+
+        const userId = validUser.rows[0].userId
+        
+        const getProducts = await connection.query(`SELECT cart.*, products."productName", products.price, products."salePrice" 
+                                                    FROM cart JOIN products
+                                                    ON products.sku = cart.sku
+                                                    WHERE cart."userId" = $1`, [userId])
+
+        console.log(getProducts.rows)
+        const cartList = getProducts.rows
+
+        cartList.map(async item => {
+            const {userId, productName, quantity, sku, price, salePrice} = item
+            await connection.query(`INSERT INTO sales ("userId", payment, "productName", price, "salePrice", sku, quantity)
+                                    VALUES ($1, $2, $3, $4, $5, $6, $7)`, 
+                                    [userId, payment, productName, price, salePrice, sku, quantity])
+        })
+        
+        res.sendStatus(201)
+    }
+    catch (e){
+        console.log(e)
+        return res.sendStatus(500)
+    }
+}
+
+
+export {getUsers, postUserAddress, postCard, getAddress, finishOrder};

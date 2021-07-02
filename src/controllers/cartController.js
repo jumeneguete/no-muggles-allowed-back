@@ -1,7 +1,7 @@
 import connection from "../database/database.js"
 
-async function getCartProducts (req,res) {
-
+async function getCartProducts (req,res) { 
+    
     const authorization = req.headers['authorization']
     const token = authorization?.replace('Bearer ', '')
 
@@ -11,9 +11,9 @@ async function getCartProducts (req,res) {
         if(!validUser.rows.length) return res.sendStatus(401)
     
         const productsSelected = await connection.query(`SELECT cart.*, products."productName", products.price, 
-                                                            products."productImage", products.stock
+                                                            products."productImage", products.stock, products."salePrice"
                                                             FROM cart JOIN products 
-                                                            ON products."SKU" = cart."SKU"
+                                                            ON products.sku = cart.sku
                                                             WHERE cart."userId" = $1`, 
                                                          [validUser.rows[0].userId])
         return res.send(productsSelected.rows).status(200)
@@ -34,7 +34,7 @@ async function deleteItem (req,res) {
                                                   WHERE token = $1`, [token])
         if(!validUser.rows.length) return res.sendStatus(401)
 
-        await connection.query(`DELETE FROM cart WHERE "SKU" = $1`, [itemSku])
+        await connection.query(`DELETE FROM cart WHERE sku = $1`, [itemSku])
         const newCart = await connection.query(`SELECT * FROM cart WHERE "userId" = $1`, 
                                                 [validUser.rows[0].userId])
 

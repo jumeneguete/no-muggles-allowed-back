@@ -44,10 +44,10 @@ describe("POST /delete-item", () => {
 
     it('returns 201 for valid params', async() => {
 
-        const insert = await connection.query(`INSERT INTO cart ("userId", "SKU", quantity)
+        const insert = await connection.query(`INSERT INTO cart ("userId", sku, quantity)
                                                 VALUES ($1, $2, $3)`, [200, 500, 1])
                                        
-        const body = {"SKU": "500"}
+        const body = {"sku": "500"}
         const result = await supertest(app) .post("/delete-item")
                                             .send(body)
                                             .set('Authorization', 'Bearer carttest')

@@ -1,9 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import { getCartProducts, deleteItem } from './controllers/cartController.js'
-import { getUsers, postUserAddress, postCard, getAddress } from './controllers/checkoutController.js'
-import express from 'express';
-import cors from 'cors';
+import { getUsers, postUserAddress, postCard, getAddress, finishOrder } from './controllers/checkoutController.js'
 import getProducts from './controllers/getProducts.js';
 import getProductsParams from './controllers/getProductsParams.js';
 import postSingUp from './controllers/singUpContrroller.js';
@@ -28,5 +26,6 @@ app.get('/products/:id', getProductsParams);
 app.post('/delete-item', deleteItem)
 app.get('/checkout', getUsers)
 app.post('/sign-out', postSingOut);
+app.post('/finish', finishOrder);
 
 export default app;
