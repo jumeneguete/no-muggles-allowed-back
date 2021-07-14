@@ -11,8 +11,6 @@ const databaseConfig = {
     password: DB_PASSWORD,
 };
 
-console.log(databaseConfig)
-
 const { Pool } = pg;
 const connection = new Pool(
     process.env?.NODE_ENV === "development"

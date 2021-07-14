@@ -12,18 +12,15 @@ async function postCart(req, res) {
 
     try {
         const result = await connection.query(`
-        SELECT * FROM sessions WHERE token = $1`, 
-        [token]);
+        SELECT * FROM sessions WHERE token = $1`, [token]);
 
         const userId = result.rows[0].userId;
 
         const alreadyAdded = await connection.query(`SELECT * FROM cart where "userId"= $1 AND sku= $2`, [userId, sku]);
         if (alreadyAdded.rows.length > 0) return res.sendStatus(409);
 
-
         await connection.query(`INSERT INTO cart ("userId", sku, quantity) VALUES ($1, $2, $3)`, [userId, sku, quantity]);
        
-
         res.sendStatus(200);
 
     } catch (err) {
